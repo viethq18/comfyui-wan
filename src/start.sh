@@ -5,12 +5,12 @@ TCMALLOC="$(ldconfig -p | grep -Po "libtcmalloc.so.\d" | head -n 1)"
 export LD_PRELOAD="${TCMALLOC}"
 
 # This is in case there's any special installs or overrides that needs to occur when starting the machine before starting ComfyUI
-if [ -f "/workspace/additional_params.sh" ]; then
-    chmod +x /workspace/additional_params.sh
+if [ -f "/network-volume/additional_params.sh" ]; then
+    chmod +x /network-volume/additional_params.sh
     echo "Executing additional_params.sh..."
-    /workspace/additional_params.sh
+    /network-volume/additional_params.sh
 else
-    echo "additional_params.sh not found in /workspace. Skipping..."
+    echo "additional_params.sh not found in /network-volume. Skipping..."
 fi
 
 if ! which aria2 > /dev/null 2>&1; then
@@ -28,7 +28,7 @@ else
 fi
 
 # Set the network volume path
-NETWORK_VOLUME="/workspace"
+NETWORK_VOLUME="/network-volume"
 URL="http://127.0.0.1:8188"
 
 # Check if NETWORK_VOLUME exists; if not, use root directory instead
@@ -39,7 +39,7 @@ if [ ! -d "$NETWORK_VOLUME" ]; then
     jupyter-lab --ip=0.0.0.0 --allow-root --no-browser --NotebookApp.token='' --NotebookApp.password='' --ServerApp.allow_origin='*' --ServerApp.allow_credentials=True --notebook-dir=/ &
 else
     echo "NETWORK_VOLUME directory exists. Starting JupyterLab..."
-    jupyter-lab --ip=0.0.0.0 --allow-root --no-browser --NotebookApp.token='' --NotebookApp.password='' --ServerApp.allow_origin='*' --ServerApp.allow_credentials=True --notebook-dir=/workspace &
+    jupyter-lab --ip=0.0.0.0 --allow-root --no-browser --NotebookApp.token='' --NotebookApp.password='' --ServerApp.allow_origin='*' --ServerApp.allow_credentials=True --notebook-dir=/network-volume &
 fi
 
 COMFYUI_DIR="$NETWORK_VOLUME/ComfyUI"
@@ -398,7 +398,7 @@ else
     echo "Skipping preview method update (change_preview_method is not 'true')."
 fi
 
-# Workspace as main working directory
+# network-volume as main working directory
 echo "cd $NETWORK_VOLUME" >> ~/.bashrc
 
 
@@ -435,7 +435,7 @@ echo "▶️  Starting ComfyUI"
 # Check if sageattention is installed and available
 if python3 -c "import sageattention" 2>/dev/null; then
     echo "🔧 SageAttention detected - using optimized mode"
-    nohup python3 "$NETWORK_VOLUME/ComfyUI/main.py" --listen --use-sage-attention > "$NETWORK_VOLUME/comfyui_${RUNPOD_POD_ID}_nohup.log" 2>&1 &
+    nohup python3 "$NETWORK_VOLUME/ComfyUI/main.py" --listen --use-sage-attention > "$NETWORK_VOLUME/comfyui_${GREENNODE_INSTANCE_ID}_nohup.log" 2>&1 &
 else
     echo "**************************************************************"
     echo "⚠️  WARNING: SageAttention not available - using standard mode"
@@ -446,7 +446,7 @@ else
     echo "   • Make sure you select CUDA version 12.8 or 12.9"
     echo "   • Check the additional filters tab before deploying"
     echo "**************************************************************"
-    nohup python3 "$NETWORK_VOLUME/ComfyUI/main.py" --listen > "$NETWORK_VOLUME/comfyui_${RUNPOD_POD_ID}_nohup.log" 2>&1 &
+    nohup python3 "$NETWORK_VOLUME/ComfyUI/main.py" --listen > "$NETWORK_VOLUME/comfyui_${GREENNODE_INSTANCE_ID}_nohup.log" 2>&1 &
 fi
 
     # Counter for timeout
@@ -462,14 +462,14 @@ fi
             echo "2. If you are deploying using network storage, try deploying without it"
             echo "3. If you are using a B200 GPU, it is currently not supported"
             echo "4. If all else fails, open the web terminal by clicking \"connect\", \"enable web terminal\" and running:"
-            echo "   cat comfyui_${RUNPOD_POD_ID}_nohup.log"
+            echo "   cat comfyui_${GREENNODE_INSTANCE_ID}_nohup.log"
             echo "   This should show a ComfyUI error. Please paste the error in HearmemanAI Discord Server for assistance."
             echo ""
-            echo "📋 Startup logs location: $NETWORK_VOLUME/comfyui_${RUNPOD_POD_ID}_nohup.log"
+            echo "📋 Startup logs location: $NETWORK_VOLUME/comfyui_${GREENNODE_INSTANCE_ID}_nohup.log"
             break
         fi
 
-        echo "🔄  ComfyUI Starting Up... You can view the startup logs here: $NETWORK_VOLUME/comfyui_${RUNPOD_POD_ID}_nohup.log"
+        echo "🔄  ComfyUI Starting Up... You can view the startup logs here: $NETWORK_VOLUME/comfyui_${GREENNODE_INSTANCE_ID}_nohup.log"
         sleep 2
         counter=$((counter + 2))
     done
