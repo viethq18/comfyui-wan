@@ -29,7 +29,7 @@ fi
 
 # Set the network volume path
 NETWORK_VOLUME="/network-volume"
-URL="http://127.0.0.1:8188"
+URL="http://0.0.0.0:8188"
 
 # Check if NETWORK_VOLUME exists; if not, use root directory instead
 if [ ! -d "$NETWORK_VOLUME" ]; then
